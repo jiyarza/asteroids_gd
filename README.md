@@ -63,16 +63,6 @@ The project aims to stay **minimal, clean, and easily extensible**, following go
 
 ---
 
-## ⚙️ Requirements
-
-- **Godot 4.3+**
-- *(Optional)* Git if you want to clone the repo:
-  ```bash
-  git clone https://github.com/<your-username>/godot-asteroids.git
-````
-
----
-
 ## ▶️ How to Run
 
 1. Open Godot and select this project folder.
