@@ -58,7 +58,7 @@ The project aims to stay **minimal, clean, and easily extensible**, following go
 | Turn Left | A |
 | Turn Right | D |
 | Shoot | Space |
-| Restart | R |
+| Pause | P |
 | Quit | Esc |
 
 ---
