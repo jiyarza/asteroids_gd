@@ -1,0 +1,26 @@
+[gd_scene load_steps=6 format=3 uid="uid://nly5yu2qvqxc"]
+
+[ext_resource type="Script" uid="uid://c4xk5udya6tcw" path="res://World/GameManager.gd" id="1_glv2v"]
+[ext_resource type="PackedScene" uid="uid://cpsaxvvwqv80r" path="res://Player/Player.tscn" id="2_r0du0"]
+[ext_resource type="Script" uid="uid://c0653xcqqx3qu" path="res://World/Spawner.gd" id="2_uu6xs"]
+[ext_resource type="PackedScene" uid="uid://d5ofcc2k5ovc" path="res://Bullet/Bullet.tscn" id="4_fos0i"]
+[ext_resource type="PackedScene" uid="uid://jna2deujyi8m" path="res://Asteroid/Asteroid.tscn" id="5_3dxm6"]
+
+[node name="World" type="Node2D"]
+
+[node name="GameManager" type="Node" parent="."]
+script = ExtResource("1_glv2v")
+world_path = NodePath("..")
+spawner_path = NodePath("../Spawner")
+ui_layer_path = NodePath("../UI")
+player_scene = ExtResource("2_r0du0")
+
+[node name="Spawner" type="Node2D" parent="."]
+script = ExtResource("2_uu6xs")
+world_path = NodePath("..")
+bullet_scene = ExtResource("4_fos0i")
+asteroid_large_scene = ExtResource("5_3dxm6")
+asteroid_medium_scene = ExtResource("5_3dxm6")
+asteroid_small_scene = ExtResource("5_3dxm6")
+
+[node name="UI" type="CanvasLayer" parent="."]

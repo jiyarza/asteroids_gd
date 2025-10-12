@@ -1,0 +1,24 @@
+[gd_scene load_steps=3 format=3 uid="uid://d5ofcc2k5ovc"]
+
+[ext_resource type="Script" uid="uid://ds2uxylh0gryr" path="res://Bullet/Bullet.gd" id="1_v7oki"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_rtl8c"]
+radius = 2.0
+height = 8.0
+
+[node name="Area2D" type="Area2D"]
+monitoring = false
+script = ExtResource("1_v7oki")
+
+[node name="Line2D" type="Line2D" parent="."]
+position = Vector2(0, 4)
+points = PackedVector2Array(0, -1, 0, -7)
+width = 3.0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CapsuleShape2D_rtl8c")
+
+[node name="Timer" type="Timer" parent="."]
+wait_time = 2.5
+one_shot = true
+autostart = true

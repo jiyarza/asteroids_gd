@@ -1,0 +1,50 @@
+[gd_scene load_steps=7 format=3 uid="uid://cpsaxvvwqv80r"]
+
+[ext_resource type="Script" uid="uid://b1dikp4pbtvjl" path="res://Player/Player.gd" id="1_kpjcp"]
+[ext_resource type="Script" uid="uid://chq8v5kumbvoq" path="res://Player/PlayerInput.gd" id="3_8g4oa"]
+[ext_resource type="Script" uid="uid://0w26s4egp5rx" path="res://Player/ShipPhysics.gd" id="3_ddoul"]
+[ext_resource type="Script" uid="uid://ble667r64ihrk" path="res://Player/Weapon.gd" id="3_tok1r"]
+[ext_resource type="Script" uid="uid://3jjpbiaw738l" path="res://ScreenWrap2D.gd" id="6_6ysni"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_sh265"]
+radius = 12.0
+height = 32.0
+
+[node name="Player" type="RigidBody2D" node_paths=PackedStringArray("input", "physics", "weapon")]
+gravity_scale = 0.0
+script = ExtResource("1_kpjcp")
+input = NodePath("PlayerInput")
+physics = NodePath("ShipPhysics")
+weapon = NodePath("Weapon")
+
+[node name="Line2D" type="Line2D" parent="."]
+points = PackedVector2Array(0, -16, -10, 10, 10, 10)
+closed = true
+width = 1.5
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CapsuleShape2D_sh265")
+
+[node name="PlayerInput" type="Node" parent="."]
+script = ExtResource("3_8g4oa")
+
+[node name="ShipPhysics" type="Node" parent="." node_paths=PackedStringArray("input")]
+script = ExtResource("3_ddoul")
+rotation_torque = 1600.0
+input = NodePath("../PlayerInput")
+
+[node name="Weapon" type="Node" parent="." node_paths=PackedStringArray("muzzle", "cooldown")]
+script = ExtResource("3_tok1r")
+muzzle = NodePath("Muzzle")
+cooldown = NodePath("FireCoolDown")
+
+[node name="FireCoolDown" type="Timer" parent="Weapon"]
+wait_time = 0.5
+one_shot = true
+autostart = true
+
+[node name="Muzzle" type="Node2D" parent="Weapon"]
+position = Vector2(0, -25)
+
+[node name="ScreenWrap2D" type="Node" parent="."]
+script = ExtResource("6_6ysni")
