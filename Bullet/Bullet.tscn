@@ -7,6 +7,8 @@ radius = 2.0
 height = 8.0
 
 [node name="Area2D" type="Area2D"]
+z_as_relative = false
+input_pickable = false
 monitoring = false
 script = ExtResource("1_v7oki")
 

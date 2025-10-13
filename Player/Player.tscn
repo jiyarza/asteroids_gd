@@ -33,7 +33,7 @@ script = ExtResource("3_ddoul")
 rotation_torque = 1600.0
 input = NodePath("../PlayerInput")
 
-[node name="Weapon" type="Node" parent="." node_paths=PackedStringArray("muzzle", "cooldown")]
+[node name="Weapon" type="Node2D" parent="." node_paths=PackedStringArray("muzzle", "cooldown")]
 script = ExtResource("3_tok1r")
 muzzle = NodePath("Muzzle")
 cooldown = NodePath("FireCoolDown")

@@ -18,39 +18,10 @@ class_name Spawner
 @export var base_large_asteroids: int = 4
 @export var asteroids_per_wave_increment: int = 2
 @export var min_spawn_distance_from_player: float = 220.0
-
-# Velocidad por defecto de bala (si el arma no la especifica)
-@export var default_bullet_speed: float = 600.0
-
-var _world: Node2D
+@onready var _world: Node = get_node(world_path)
 
 func _ready() -> void:
-	_world = _get_world()
-	
 	randomize()
-
-func _get_world() -> Node2D:
-	# 1) Por export
-	if world_path != NodePath(""):
-		_world = get_node(world_path) as Node2D
-
-	# 2) Si no hay export, intenta por nombre dentro de la escena actual
-	if _world == null and get_tree().current_scene and get_tree().current_scene.has_node("World"):
-		_world = get_tree().current_scene.get_node("World") as Node2D
-
-	# 3) Como último recurso, por grupo "world" (si lo usas)
-	if _world == null:
-		_world = get_tree().get_first_node_in_group("world") as Node2D
-
-	# 4) Fallback extremo: si el Spawner es hijo directo de World, úsalo; si no, self
-	if _world == null:
-		_world = get_parent() as Node2D
-	
-	if _world == null:
-		push_error("Spawner: no encuentro el nodo 'World'. Asigna 'world_path' o añade el nodo al grupo 'world'.")
-		_world = self  # evita null y al menos instancia en el propio Spawner
-
-	return _world
 	
 # ======================================================
 # Conectar armas (Weapon) para que Spawner instancie balas
@@ -60,9 +31,8 @@ func connect_weapon(weapon: Node) -> void:
 	if weapon and weapon.has_signal("fire_requested"):
 		weapon.fire_requested.connect(_on_weapon_fire_requested)
 
-func _on_weapon_fire_requested(pos: Vector2, dir: Vector2, cfg: Dictionary) -> void:	
-	var speed: float = float(cfg.get("speed", default_bullet_speed))
-	spawn_bullet(pos, dir, bullet_scene, speed)
+func _on_weapon_fire_requested(pos: Vector2, dir: Vector2) -> void:	
+	spawn_bullet(pos, dir)
 
 # =======================
 # Limpieza del mundo (sólo grupo "spawn")
@@ -75,27 +45,16 @@ func clear_world() -> void:
 # ==============
 # Bullets
 # ==============
-func spawn_bullet(spawn_position: Vector2, direction: Vector2, scene: PackedScene = bullet_scene, speed: float = default_bullet_speed) -> Node:
-	print("spawn_bullet() - called")
-	if scene == null:
+func spawn_bullet(spawn_position: Vector2, direction: Vector2) -> Node:
+	if bullet_scene == null:
 		push_warning("Spawner.spawn_bullet: scene es null.")
 		return null
-	var bullet := scene.instantiate()
-	bullet.global_position = spawn_position
-	bullet.rotation = direction.angle()
-
-	# Inicialización flexible según el tipo de Bullet:
-	if bullet.has_method("initialize"):
-		bullet.initialize(direction.normalized() * speed)
-	elif bullet is RigidBody2D:
-		bullet.linear_velocity = direction.normalized() * speed
-	elif bullet.has_method("set_velocity"):
-		bullet.set_velocity(direction.normalized() * speed)
-
-	bullet.add_to_group("spawn")     # 👈 clave
-	bullet.add_to_group("bullets")
-	#_world.call_deferred("add_child", bullet)
+	var bullet := bullet_scene.instantiate()
 	_world.add_child(bullet)
+	bullet.setup(spawn_position, direction)
+	bullet.add_to_group("spawn")     # 👈 clave
+	bullet.add_to_group("bullets")		
+	
 	return bullet
 
 # ==============
@@ -129,10 +88,9 @@ func spawn_asteroid(size: int, spawn_position: Vector2, velocity: Vector2 = Vect
 
 	asteroid.add_to_group("spawn")   # 👈 clave
 	asteroid.add_to_group("asteroids")
-
 	if not _world:
-		_get_world()
-			
+		_world = get_node(world_path)
+	
 	_world.call_deferred("add_child", asteroid)
 	
 	return asteroid
