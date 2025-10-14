@@ -7,7 +7,10 @@
 radius = 17.262676
 
 [node name="RigidBody2D" type="RigidBody2D"]
+collision_layer = 4
+collision_mask = 7
 gravity_scale = 0.0
+angular_damp_mode = 1
 script = ExtResource("1_h8dtb")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]

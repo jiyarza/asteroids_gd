@@ -34,6 +34,24 @@ func connect_weapon(weapon: Node) -> void:
 func _on_weapon_fire_requested(pos: Vector2, dir: Vector2) -> void:	
 	spawn_bullet(pos, dir)
 
+func connect_asteroid(a: Asteroid) -> void:
+	# Conexiones idempotentes (si ya estaban, Godot evita duplicadas)
+	a.split_requested.connect(_on_asteroid_split)
+	a.destroyed.connect(_on_asteroid_destroyed)
+
+func _on_asteroid_split(pos: Vector2, next_size: int) -> void:
+	# Dos fragmentos, direcciones/velocidades aleatorias
+	for i in 2:
+		var angle := randf_range(0.0, TAU)
+		var dir := Vector2.RIGHT.rotated(angle)
+		var speed := randf_range(90.0, 160.0)
+		spawn_asteroid(next_size, pos, dir * speed)
+
+func _on_asteroid_destroyed(pos: Vector2, size: int) -> void:
+	# Aquí puedes llevar contadores, puntuación, comprobar “wave cleared”, etc.
+	print("ASTEROID DESTROYED. ADD SCORE.")
+
+
 # =======================
 # Limpieza del mundo (sólo grupo "spawn")
 # =======================
@@ -88,6 +106,7 @@ func spawn_asteroid(size: int, spawn_position: Vector2, velocity: Vector2 = Vect
 
 	asteroid.add_to_group("spawn")   # 👈 clave
 	asteroid.add_to_group("asteroids")
+	connect_asteroid(asteroid)
 	if not _world:
 		_world = get_node(world_path)
 	

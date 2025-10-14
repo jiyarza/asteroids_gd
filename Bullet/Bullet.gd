@@ -10,11 +10,9 @@ var direction = Vector2.UP
 @onready var lifetime_timer = $Timer
 
 func setup(start_pos: Vector2, start_dir: Vector2) -> void:
-	direction = start_dir.normalized()
-	print("start_pos", start_pos)
+	direction = start_dir.normalized()	
 	global_position = start_pos
 	global_rotation = direction.angle()
-	print("bullet pos: ", global_position)
 
 # Función que se llama cuando la bala entra en la escena.
 func _ready():
@@ -26,7 +24,7 @@ func _ready():
 	lifetime_timer.timeout.connect(_on_lifetime_timeout)
 
 	# Conectamos la señal 'body_entered' para saber si choca con algo.
-	body_entered.connect(_on_body_entered)
+#	body_entered.connect(_on_body_entered)
 
 # Se llama en cada frame. Ideal para el movimiento.
 func _physics_process(delta):
@@ -43,8 +41,10 @@ func _on_lifetime_timeout():
 	queue_free()
 
 # Esta función se ejecutará cuando el Area2D de la bala toque un cuerpo físico (RigidBody, CharacterBody...).
-func _on_body_entered(_body):
+func _on_body_entered(_body: Node):
 	print("Bullet: _on_body_entered")
+	if _body is Asteroid:
+		_body.hit()
 	# Por ahora, simplemente destruimos la bala al impactar.
 	# Más adelante, aquí le diremos al asteroide que se destruya.
 	queue_free()
