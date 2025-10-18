@@ -2,7 +2,10 @@
 extends Node2D
 class_name Spawner
 
+signal asteroid_spawned(a: Asteroid)
+
 @export_node_path("Node2D") var world_path: NodePath
+var _gm: GameManager
 # =======================
 # Escenas a instanciar
 # =======================
@@ -21,6 +24,7 @@ class_name Spawner
 @onready var _world: Node = get_node(world_path)
 
 func _ready() -> void:
+	_gm = _world.get_node("GameManager") as GameManager
 	randomize()
 	
 # ======================================================
@@ -28,8 +32,7 @@ func _ready() -> void:
 # ======================================================
 func connect_weapon(weapon: Node) -> void:
 	# Weapon debe emitir: signal fire_requested(position, direction, config)
-	if weapon and weapon.has_signal("fire_requested"):
-		weapon.fire_requested.connect(_on_weapon_fire_requested)
+	weapon.fire_requested.connect(_on_weapon_fire_requested)
 
 func _on_weapon_fire_requested(pos: Vector2, dir: Vector2) -> void:	
 	spawn_bullet(pos, dir)
@@ -37,7 +40,7 @@ func _on_weapon_fire_requested(pos: Vector2, dir: Vector2) -> void:
 func connect_asteroid(a: Asteroid) -> void:
 	# Conexiones idempotentes (si ya estaban, Godot evita duplicadas)
 	a.split_requested.connect(_on_asteroid_split)
-	a.destroyed.connect(_on_asteroid_destroyed)
+	#a.destroyed.connect(_on_asteroid_destroyed)
 
 func _on_asteroid_split(pos: Vector2, next_size: int) -> void:
 	# Dos fragmentos, direcciones/velocidades aleatorias
@@ -46,11 +49,6 @@ func _on_asteroid_split(pos: Vector2, next_size: int) -> void:
 		var dir := Vector2.RIGHT.rotated(angle)
 		var speed := randf_range(90.0, 160.0)
 		spawn_asteroid(next_size, pos, dir * speed)
-
-func _on_asteroid_destroyed(pos: Vector2, size: int) -> void:
-	# Aquí puedes llevar contadores, puntuación, comprobar “wave cleared”, etc.
-	print("ASTEROID DESTROYED. ADD SCORE.")
-
 
 # =======================
 # Limpieza del mundo (sólo grupo "spawn")
@@ -98,20 +96,14 @@ func spawn_asteroid(size: int, spawn_position: Vector2, velocity: Vector2 = Vect
 
 	var asteroid := scene.instantiate()
 	asteroid.global_position = spawn_position
-
-	if asteroid is RigidBody2D:
-		asteroid.linear_velocity = velocity
-	elif asteroid.has_method("set_velocity"):
-		asteroid.set_velocity(velocity)
-
+	asteroid.linear_velocity = velocity	
 	asteroid.add_to_group("spawn")   # 👈 clave
-	asteroid.add_to_group("asteroids")
-	connect_asteroid(asteroid)
-	if not _world:
+	asteroid.add_to_group("asteroids")	
+	if not _world: 
 		_world = get_node(world_path)
-	
 	_world.call_deferred("add_child", asteroid)
-	
+	connect_asteroid(asteroid)
+	emit_signal("asteroid_spawned", asteroid)	
 	return asteroid
 
 # ==============

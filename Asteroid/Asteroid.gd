@@ -11,8 +11,8 @@ enum Size { LARGE, MEDIUM, SMALL }
 @export var max_speed: float = 50.0
 @export var min_impulse: float = 10.0
 @export var max_impulse: float = 50.0
-@export var min_torque: float = -20.0
-@export var max_torque: float = 20.0
+@export var min_torque: float = -10.0
+@export var max_torque: float = 10.0
 @export var speed: float = 0.0
 
 var target_speed = 50.0;

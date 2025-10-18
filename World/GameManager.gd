@@ -12,6 +12,8 @@ signal game_over(final_score: int)
 @export_node_path("CanvasLayer") var ui_layer_path: NodePath
 @export var player_scene: PackedScene
 @export var waves_config: Resource  # opcional (p.ej. Waves.tres)
+@export var spawn_delay := 1.0
+@export var spawn_invulnerability_time := 1.25
 
 # Estado de la partida
 var score: int = 0
@@ -19,15 +21,20 @@ var lives: int = 3
 var wave_index: int = 0
 var is_paused: bool = false
 var _player: Node = null
-var _world: Node2D = null
-var _spawner: Node = null
 var _ui: CanvasLayer = null
 
-func _ready() -> void:
-	_world = get_node_or_null(world_path)
-	_spawner = get_node_or_null(spawner_path)
-	_ui = get_node_or_null(ui_layer_path)
+@onready var _world: Node2D = get_node(world_path)
+@onready var _spawner: Spawner = get_node(spawner_path)
+@onready var _hud: HUD = _world.get_node("UI/HUD") as HUD
 
+var _active_asteroids := 0
+
+func _ready() -> void:
+	assert(_world != null, "GameManager: falta World.")	
+	assert(_spawner != null, "GameManager: falta Spawner.")
+	assert(_hud != null, "GameManager: falta HUD.")
+	_hud.reset()
+	
 	# Arranca en título o directamente en partida según tu flujo:
 	start_game()
 
@@ -53,7 +60,7 @@ func start_game() -> void:
 	_spawn_player()
 	_start_wave(wave_index)
 	emit_signal("game_started")
-	_update_ui_all()
+	_update_hud_all()
 
 func _start_wave(index: int) -> void:
 	# Genera la oleada actual (asteroides grandes, etc.)
@@ -68,56 +75,47 @@ func _on_wave_cleared() -> void:
 	wave_index += 1
 	_start_wave(wave_index)
 
-# ---------------------------
-# Player: spawn y cableado
-# ---------------------------
+# ======================================================
+# =============== Ciclo de vida del Player =============
+# ======================================================
 func _spawn_player() -> void:
-	if not player_scene:
-		push_warning("GameManager: player_scene no asignado.")
-		return
-	if not _world:
-		push_warning("GameManager: world_path no asignado.")
-		return
-
-	_player = player_scene.instantiate()
-	
+	_player = player_scene.instantiate()	
 	_world.call_deferred("add_child", _player)
-
-	# Conexiones/contratos esperados del Player
-	# - Señal "died" (cuando pierde una vida)
-	# - Referencia/nodo hijo "Weapon" que emite fire_requested
-	if _player.has_signal("died"):
-		_player.died.connect(_on_player_died)
-
-	# Cablear Weapon -> Spawner (para instanciar balas)
-	var weapon := _player.get_node_or_null("Weapon")
-	if weapon and _spawner and _spawner.has_method("connect_weapon"):
-		_spawner.connect_weapon(weapon)
+	_player.died.connect(_on_player_died)
+	
+	var weapon := _player.get_node_or_null("Weapon")	
+	_spawner.connect_weapon(weapon)
 
 	_update_ui_lives()
 
 func _on_player_died() -> void:
 	lives -= 1
 	_update_ui_lives()
+	
+	# Limpiar referencia (se hace queue_free en _die()
+	_player = null
+	
 	if lives > 0:
-		# Respawn rápido del jugador
-		_respawn_player()
+		_respawn_after_delay()
 	else:
-		_on_game_over()
+		_game_over()
 
-func _respawn_player() -> void:
-	if is_paused: 
-		return
-	# Limpia balas/enemigos cercanos si quieres dar “respiro”
-	# _spawner.clear_near_player()  # si implementas algo así
+func _respawn_after_delay() -> void:
+	# Pequeño retardo para feedback visual/sonoro
+	await get_tree().create_timer(spawn_delay).timeout
 	_spawn_player()
 
-# ---------------------------
-# Score y destrucciones
-# ---------------------------
-# Estas funciones las invocan Asteroids/UFO/Spawner cuando algo muere.
-func on_asteroid_destroyed(points: int = 100) -> void:
-	score += points
+# ======================================================
+# =================== HUD / Marcadores =================
+# ======================================================
+func _on_asteroid_spawned(a: Asteroid) -> void:
+	assert(a is Asteroid, "Spawner emitió algo que no es Asteroid")
+	_active_asteroids += 1
+	a.destroyed.connect(_on_asteroid_destroyed)
+
+func _on_asteroid_destroyed(size: int) -> void:
+	print("_on_asteroid_destroyed ->", size)
+	score += 50 * size
 	_update_ui_score()
 	_check_wave_cleared()
 
@@ -145,7 +143,7 @@ func toggle_pause() -> void:
 # ---------------------------
 # Game Over
 # ---------------------------
-func _on_game_over() -> void:
+func _game_over() -> void:
 	# Limpia mundo y muestra overlay GameOver (si existe en tu UI)
 	_clear_world()
 	emit_signal("game_over", score)
@@ -165,33 +163,19 @@ func _clear_world() -> void:
 # ---------------------------
 # UI helpers (mínimos)
 # ---------------------------
-func _update_ui_all() -> void:
-	_update_ui_score()
-	_update_ui_lives()
-	_update_ui_wave()
-	_update_ui_pause()
+func _update_hud_all() -> void:
+	if _hud:
+		_hud.reset(score, lives, wave_index + 1)
 
 func _update_ui_score() -> void:
-	if not _ui:
-		return
-	var score_label := _ui.get_node_or_null("HUD/ScoreLabel")
-	if score_label and score_label.has_method("set_text"):
-		score_label.set_text(str(score))
+	_hud.set_score(score)
 
 func _update_ui_lives() -> void:
-	if not _ui:
-		return
-	var lives_label := _ui.get_node_or_null("HUD/LivesLabel")
-	if lives_label and lives_label.has_method("set_text"):
-		lives_label.set_text(str(lives))
+	_hud.set_lives(lives)
 
 func _update_ui_wave() -> void:
-	if not _ui:
-		return
-	var wave_label := _ui.get_node_or_null("HUD/WaveLabel")
-	if wave_label and wave_label.has_method("set_text"):
-		wave_label.set_text(str(wave_index + 1))
-
+	_hud.set_level(wave_index + 1)
+	
 func _update_ui_pause() -> void:
 	if not _ui:
 		return

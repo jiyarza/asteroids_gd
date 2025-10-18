@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=3 uid="uid://nly5yu2qvqxc"]
+[gd_scene load_steps=10 format=3 uid="uid://nly5yu2qvqxc"]
 
 [ext_resource type="Script" uid="uid://c4xk5udya6tcw" path="res://World/GameManager.gd" id="1_glv2v"]
 [ext_resource type="PackedScene" uid="uid://cpsaxvvwqv80r" path="res://Player/Player.tscn" id="2_r0du0"]
@@ -7,6 +7,9 @@
 [ext_resource type="PackedScene" uid="uid://jna2deujyi8m" path="res://Asteroid/Asteroid.tscn" id="5_3dxm6"]
 [ext_resource type="PackedScene" uid="uid://b0q4a0fbwoboc" path="res://Asteroid/Asteroid_MEDIUM.tscn" id="6_lgr22"]
 [ext_resource type="PackedScene" uid="uid://dnqiso5p2mkir" path="res://Asteroid/Asteroid_SMALL.tscn" id="7_trn2v"]
+[ext_resource type="Script" uid="uid://dyla14qg54r7w" path="res://UI/hud.gd" id="8_trn2v"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_03owx"]
 
 [node name="World" type="Node2D"]
 
@@ -26,3 +29,38 @@ asteroid_medium_scene = ExtResource("6_lgr22")
 asteroid_small_scene = ExtResource("7_trn2v")
 
 [node name="UI" type="CanvasLayer" parent="."]
+
+[node name="HUD" type="Control" parent="UI"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("8_trn2v")
+
+[node name="MarginContainer" type="MarginContainer" parent="UI/HUD"]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 16
+
+[node name="HBoxContainer" type="HBoxContainer" parent="UI/HUD/MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 24
+
+[node name="LivesLabel" type="Label" parent="UI/HUD/MarginContainer/HBoxContainer"]
+layout_mode = 2
+text = "Vidas: AAA"
+label_settings = SubResource("LabelSettings_03owx")
+
+[node name="LevelLabel" type="Label" parent="UI/HUD/MarginContainer/HBoxContainer"]
+layout_mode = 2
+text = "Level: 1"
+
+[node name="ScoreLabel" type="Label" parent="UI/HUD/MarginContainer/HBoxContainer"]
+layout_mode = 2
+text = "Score: 0"
