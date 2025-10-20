@@ -133,9 +133,6 @@ func spawn_wave(wave_index: int, player_global_pos: Vector2 = Vector2.ZERO) -> v
 
 # ¿Se ha limpiado la oleada?
 func is_wave_cleared() -> bool:
-	print("IS_WAVE_CLEARED: ", get_tree().get_nodes_in_group("asteroids").size())
-	for n in get_tree().get_nodes_in_group("asteroids"):
-		print("[ASTEROIDS GROUP] ", n.name, " @ ", n.get_path())
 	return (
 		get_tree().get_nodes_in_group("asteroids").is_empty()
 		and get_tree().get_nodes_in_group("enemies").is_empty()

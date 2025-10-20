@@ -124,7 +124,6 @@ func on_ufo_destroyed(points: int = 250) -> void:
 	_check_wave_cleared()
 
 func _check_wave_cleared() -> void:
-	#print("_CHECK_WAVE_CLEARED ")
 	if _spawner.is_wave_cleared():
 		_on_wave_cleared()
 
