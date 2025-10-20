@@ -42,7 +42,7 @@ func _on_lifetime_timeout():
 
 # Esta función se ejecutará cuando el Area2D de la bala toque un cuerpo físico (RigidBody, CharacterBody...).
 func _on_body_entered(_body: Node):
-	print("Bullet: _on_body_entered")
+	#print("Bullet: _on_body_entered")
 	if _body is Asteroid:
 		_body.hit()
 	# Por ahora, simplemente destruimos la bala al impactar.

@@ -75,10 +75,14 @@ func setup(start_position: Vector2, start_direction: Vector2, start_size: float 
 	# Ajustamos la velocidad según el tamaño (los más pequeños son más rápidos)
 	speed = speed / start_size
 
-func hit():
+func hit():	
 	# Si ya es el tamaño mínimo, desaparece
 	if size == Size.SMALL:
 		print("Asteroid DESTROYED")
+		remove_from_group("asteroids")
+		remove_from_group("enemies")
+		remove_from_group("spawn")		
+
 		destroyed.emit(global_position, size)
 		queue_free()
 		return
@@ -89,7 +93,12 @@ func hit():
 		next_size = Size.MEDIUM
 	else:
 		next_size = Size.SMALL
-	
+		
 	split_requested.emit(global_position, next_size)
+	remove_from_group("asteroids")
+	remove_from_group("enemies")
+	remove_from_group("spawn")
+
+	destroyed.emit(global_position, size)
 	# El asteroide original desaparece
 	queue_free()

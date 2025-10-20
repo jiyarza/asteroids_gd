@@ -4,7 +4,7 @@
 [ext_resource type="Script" uid="uid://3jjpbiaw738l" path="res://ScreenWrap2D.gd" id="2_mf2qt"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_h8dtb"]
-radius = 17.262676
+radius = 22.0
 
 [node name="RigidBody2D" type="RigidBody2D"]
 collision_layer = 4
@@ -17,6 +17,8 @@ script = ExtResource("1_h8dtb")
 shape = SubResource("CircleShape2D_h8dtb")
 
 [node name="Line2D" type="Line2D" parent="."]
+position = Vector2(1, -4.7683716e-07)
+scale = Vector2(1.6571429, 1.5555556)
 points = PackedVector2Array(-16, 0, -15, -6, 0, -16, 15, -5, 9, 0, 11, 12, -2, 16, -9, 14)
 closed = true
 width = 2.0

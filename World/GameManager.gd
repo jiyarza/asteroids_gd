@@ -34,7 +34,7 @@ func _ready() -> void:
 	assert(_spawner != null, "GameManager: falta Spawner.")
 	assert(_hud != null, "GameManager: falta HUD.")
 	_hud.reset()
-	
+	_spawner.asteroid_spawned.connect(_on_asteroid_spawned)	
 	# Arranca en título o directamente en partida según tu flujo:
 	start_game()
 
@@ -63,14 +63,13 @@ func start_game() -> void:
 	_update_hud_all()
 
 func _start_wave(index: int) -> void:
-	# Genera la oleada actual (asteroides grandes, etc.)
-	# Si tienes un Waves.tres con configuración, léela aquí
-	if _spawner and _spawner.has_method("spawn_wave"):
-		_spawner.spawn_wave(index)
+	print("START_WAVE ", index)
+	_spawner.spawn_wave(index)
 	emit_signal("wave_started", index)
 	_update_ui_wave()
 
 func _on_wave_cleared() -> void:
+	print("_ON_WAVE_CLEARED()")
 	emit_signal("wave_cleared", wave_index)
 	wave_index += 1
 	_start_wave(wave_index)
@@ -113,9 +112,9 @@ func _on_asteroid_spawned(a: Asteroid) -> void:
 	_active_asteroids += 1
 	a.destroyed.connect(_on_asteroid_destroyed)
 
-func _on_asteroid_destroyed(size: int) -> void:
-	print("_on_asteroid_destroyed ->", size)
-	score += 50 * size
+func _on_asteroid_destroyed(position: Vector2, size: int) -> void:
+	#print("_on_asteroid_destroyed ->", size)
+	score += 50 * (size + 1)
 	_update_ui_score()
 	_check_wave_cleared()
 
@@ -125,10 +124,9 @@ func on_ufo_destroyed(points: int = 250) -> void:
 	_check_wave_cleared()
 
 func _check_wave_cleared() -> void:
-	# Regla simple: pregunta al Spawner si quedan enemigos/asteroides
-	if _spawner and _spawner.has_method("is_wave_cleared"):
-		if _spawner.is_wave_cleared():
-			_on_wave_cleared()
+	#print("_CHECK_WAVE_CLEARED ")
+	if _spawner.is_wave_cleared():
+		_on_wave_cleared()
 
 # ---------------------------
 # Pausa
