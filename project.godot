@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="Asteroids_gd"
-run/main_scene="uid://nly5yu2qvqxc"
+run/main_scene="uid://cauxdiaqqjklv"
 config/features=PackedStringArray("4.5", "Forward Plus")
 config/icon="res://icon.svg"
 
