@@ -30,12 +30,12 @@ flowchart TD
 
     subgraph Asteroids
       A[Asteroid.gd]
-      A -->|signal: asteroid_split_requested(position, next_size)| S
-      A -->|signal: asteroid_destroyed(position, size)| GM
+      A -->|"signal: asteroid_split_requested(position, next_size)"| S
+      A -->|"signal: asteroid_destroyed(position, size)"| GM
     end
 
     subgraph Spawner
-      S -->|signal: asteroid_spawned(asteroid)| GM
+      S -->|"signal: asteroid_spawned(asteroid)"| GM
     end
 
     subgraph UI
