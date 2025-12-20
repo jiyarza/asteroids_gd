@@ -1,8 +1,8 @@
-# Signal Flow – Asteroids (Godot)
+# Signal Flow - Asteroids (Godot)
 
 ```mermaid
 flowchart TD
-    %% Signal Flow – Asteroids (Godot)
+    %% Signal Flow - Asteroids (Godot)
     %% Conventions:
     %% - signal: <name>(args...)  -> Godot signal emission / connection
     %% - call: <method>()         -> direct method call (not a signal)
@@ -10,7 +10,7 @@ flowchart TD
     subgraph MainMenu
       MM[MainMenu.gd]
       ST[SceneTree]
-      MM -->|call: change_scene_to_file(...)| ST
+      MM -->|"call: change_scene_to_file(...)"| ST
       MM -.->|InputEvent (tecla)| MM
     end
 
