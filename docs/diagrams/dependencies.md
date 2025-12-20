@@ -1,12 +1,13 @@
+```mermaid
 flowchart LR
     %% ==========================================================
-    %% Asteroids (Godot 4) — Diagrama de dependencias (mejorado)
-    %% - Flecha sólida: dependencia directa / llamada / señal
+    %% Asteroids (Godot 4) - Diagrama de dependencias (mejorado)
+    %% - Flecha solida: dependencia directa / llamada / senal
     %% - Flecha discontinua: wiring por Inspector / NodePath / opcional
     %% ==========================================================
 
     %% =======================
-    %% Escenas raíz
+    %% Escenas raiz
     %% =======================
     MainMenuScene["Scene: MainMenu.tscn"] --> MainMenuScript["Script: MainMenu.gd"]
 
@@ -16,7 +17,7 @@ flowchart LR
     MainScene --> PauseControllerScript["Script: UI/PauseController.gd<br/><i>class_name PauseController</i>"]
 
     %% =======================
-    %% GameManager (orquestación)
+    %% GameManager (orquestacion)
     %% =======================
     GMScript -. "(@export) world_path: NodePath" .-> WorldNode["Node: World (Node2D)"]
     GMScript -. "(@export) spawner_path: NodePath" .-> SpawnerScript
@@ -25,7 +26,7 @@ flowchart LR
     GMScript -. "(@export) player_scene: PackedScene" .-> PlayerScene["Scene: Player/Player.tscn"]
     GMScript -->|instantiate()| PlayerScene
 
-    %% GameManager escucha señales del Player
+    %% GameManager escucha senales del Player
     PlayerScript["Script: Player/Player.gd<br/><i>class_name Player</i>"] -->|"signal died"| GMScript
 
     %% GameManager integra Spawner: conecta el arma del Player al Spawner
@@ -34,11 +35,11 @@ flowchart LR
     %% GameManager actualiza HUD (llamadas directas)
     GMScript -->|"reset(score,lives,level) / set_score / set_lives / set_level"| HUDScript
 
-    %% Pausa (opcional desde GameManager: en tu código está comentado)
-    GMScript -. "set_pause(is_paused) / notificación UI (opcional)" .-> PauseControllerScript
+    %% Pausa (opcional desde GameManager: en tu codigo esta comentado)
+    GMScript -. "set_pause(is_paused) / notificacion UI (opcional)" .-> PauseControllerScript
 
     %% =======================
-    %% Spawner (instanciación de entidades)
+    %% Spawner (instanciacion de entidades)
     %% =======================
     SpawnerScript -. "(@export) bullet_scene: PackedScene" .-> BulletScene["Scene: Bullet/Bullet.tscn"]
     SpawnerScript -. "(@export) asteroid_large_scene: PackedScene" .-> AsteroidLargeScene["Scene: Asteroid/Asteroid.tscn"]
@@ -50,7 +51,7 @@ flowchart LR
     SpawnerScript -. "(@export_node_path) world_path: NodePath" .-> WorldNode
     SpawnerScript -->|"add_child( bullet / asteroid / ufo )"| WorldNode
 
-    %% Conexión de Weapon -> Spawner (señal fire_requested)
+    %% Conexion de Weapon -> Spawner (senal fire_requested)
     WeaponScript["Script: Player/Weapon.gd<br/><i>class_name Weapon</i>"] -->|"signal fire_requested(pos,dir)"| SpawnerScript
 
     %% Spawner cablea eventos de asteroide para split
@@ -63,7 +64,7 @@ flowchart LR
     SpawnerScript -->|"signal asteroid_spawned(a: Asteroid)"| GMScript
 
     %% =======================
-    %% Player (composición por componentes)
+    %% Player (composicion por componentes)
     %% =======================
     PlayerScene --> PlayerScript
     PlayerScript -. "(@export) input: PlayerInput" .-> PlayerInputScript["Script: Player/PlayerInput.gd<br/><i>class_name PlayerInput</i>"]
@@ -104,9 +105,10 @@ flowchart LR
     %% =======================
     ScreenWrapScript["Script: ScreenWrap2D.gd<br/><i>class_name ScreenWrap2D</i>"]
     %% ScreenWrap2D funciona como componente (habitualmente como hijo del Node2D/RigidBody2D)
-    %% Si lo has añadido en las escenas, estas relaciones aplican:
+    %% Si lo has anadido en las escenas, estas relaciones aplican:
     PlayerScene -. "si contiene ScreenWrap2D como child" .-> ScreenWrapScript
     AsteroidLargeScene -. "si contiene ScreenWrap2D como child" .-> ScreenWrapScript
     AsteroidMedScene -. "si contiene ScreenWrap2D como child" .-> ScreenWrapScript
     AsteroidSmallScene -. "si contiene ScreenWrap2D como child" .-> ScreenWrapScript
     BulletScene -. "si contiene ScreenWrap2D como child" .-> ScreenWrapScript
+```
