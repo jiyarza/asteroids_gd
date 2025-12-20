@@ -25,7 +25,7 @@ flowchart TD
 
     subgraph WeaponToSpawner
       S[Spawner.gd]
-      W -->|signal: fire_requested(position, direction)| S
+      W -->|"signal: fire_requested(position, direction)"| S
     end
 
     subgraph Asteroids
