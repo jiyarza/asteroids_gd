@@ -11,7 +11,7 @@ flowchart TD
       MM[MainMenu.gd]
       ST[SceneTree]
       MM -->|"call: change_scene_to_file(...)"| ST
-      MM -.->|InputEvent (tecla)| MM
+      MM -.->|"InputEvent (tecla)"| MM
     end
 
     subgraph Player
