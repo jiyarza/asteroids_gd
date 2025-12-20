@@ -46,6 +46,6 @@ flowchart TD
     end
 
     subgraph WorldState
-      GM[GameManager.gd (Event Aggregator)]
+      GM[GameManager.gd "(Event Aggregator)"]
     end
 ```
