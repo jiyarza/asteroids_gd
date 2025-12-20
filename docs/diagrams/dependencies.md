@@ -24,7 +24,7 @@ flowchart LR
     GMScript -. "(@export) ui_layer_path: NodePath" .-> HUDScript
 
     GMScript -. "(@export) player_scene: PackedScene" .-> PlayerScene["Scene: Player/Player.tscn"]
-    GMScript -->|instantiate()| PlayerScene
+    GMScript -->|"instantiate()"| PlayerScene
 
     %% GameManager escucha senales del Player
     PlayerScript["Script: Player/Player.gd<br/><i>class_name Player</i>"] -->|"signal died"| GMScript
